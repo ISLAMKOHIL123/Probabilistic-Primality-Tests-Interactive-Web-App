@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tests de Primalité - Projet Mini</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+body {
+    background: linear-gradient(180deg, #f4f7fb, #eef2f7);
+    font-family: Inter, system-ui, Arial, sans-serif;
+    color: #1f2937;
+}
+
+
+.header {
+    background: linear-gradient(135deg, #0d6efd, #4f46e5);
+    color: white;
+    padding: 24px 0;
+    margin-bottom: 24px;
+}
+.header h1 i { opacity: 0.9; }
+.header .lead { opacity: 0.9; }
+
+
+.card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.card-header {
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 14px 14px 0 0;
+}
+
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 12px 14px;
+}
+.form-control:focus,
+.form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+
+.btn-test {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0 22px;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+}
+.btn-test:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.45);
+}
+
+.info-badge {
+    display: inline-block;
+    margin: 4px 6px 0 0;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+
+.test-card {
+    transition: transform 0.2s ease;
+}
+.test-card:hover {
+    transform: translateY(-4px);
+}
+
+.test-card.miller { border-left: 5px solid #4ecdc4; }
+.test-card.solovay { border-left: 5px solid #0d87fa; }
+.test-card.fast { border-left: 5px solid #45b7d1; }
+
+
+.result-prime {
+    color: #16a34a;
+    font-weight: 700;
+}
+.result-composite {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+
+.probability-bar {
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.probability-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+
+.loading {
+    text-align: center;
+    padding: 24px;
+}
+
+
+footer {
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+
+.left-sidebar {
+    position: sticky;
+    top: 90px;
+}
+.control-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.small-note { font-size: 0.87rem; color: #6b7280; }
+.canvas-card { padding: 14px 16px; }
+.chart-wrap { height: 320px; }
+.results-card { margin-top: 18px; }
+.compare-card .card-body { padding: 14px; }
+    </style>
+</head>
+<body>
+   
+    <header class="header">
+    <div class="container">
+        <div class="row align-items-center gy-3">
+            
+          
+            <div class="col-md-8">
+                <h1 class="mb-1 fw-bold">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Tests de Primalité
+                </h1>
+
+                <small class="opacity-75">
+                    Mini-Projet
+                </small>
+                
+                <p class="lead mb-0">
+                    Solovay–Strassen • Miller–Rabin • Fermat
+                </p>
+                
+            </div>
+
+          
+            <div class="col-md-4 text-md-end">
+                <div class="student-card">
+
+                    <div class="student-line">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        KOHIL Islam
+                    </div>
+
+                    <div class="student-line">
+                        <i class="fas fa-id-badge me-2"></i>
+                        <strong>212131030358</strong>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+
+    
+    <div class="container">
+        <div class="row g-4">
+            
+            <aside class="col-lg-4">
+                <div class="left-sidebar">
+                    
+                    <div class="card mb-3">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-cog"></i> Commandes</h5>
+                        </div>
+                        <div class="card-body">
+                            <label class="control-label">Nombre à tester</label>
+                            <div class="input-group mb-3 input-group-lg">
+                                <input type="text" id="numberInput" class="form-control" placeholder="Ex: 123" value="">
+                                <button id="testButton" class="btn btn-test">
+                                    <i class="fas fa-play-circle me-1"></i> Tester
+                                </button>
+                            </div>
+                            <div class="small-note mb-2">Entrez un entier positif </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12 mb-2">
+                                    <label class="control-label">Sélection du test</label>
+                                    <select id="testSelect" class="form-select">
+                                        <option value="all">Tous les tests (comparaison)</option>
+                                        <option value="solovay">Solovay-Strassen</option>
+                                        <option value="miller" selected>Miller-Rabin</option>
+                                        <option value="fast">Fermat</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="control-label">Nombre d'itérations (k)</label>
+                                    <input type="number" id="iterationsInput" class="form-control" min="1" max="100" value="10">
+                                </div>
+                            </div>
+
+                            <div id="loading" class="loading" style="display:none;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="spinner-border text-primary" role="status" style="width:1.4rem; height:1.4rem;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <div>Test en cours…</div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="alert alert-info mb-0">
+                                <h6 class="mb-1"><i class="fas fa-info-circle"></i> Notes</h6>
+                                <small>
+                                    <strong>Solovay-Strassen :</strong> basé sur le symbole de Jacobi.<br>
+                                    <strong>Miller-Rabin :</strong> test probabiliste plus robuste.<br>
+                                    <strong>Fermat :</strong> rapide mais vulnérable aux Carmichael.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card compare-card mb-3">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-balance-scale"></i> Comparaison</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <div class="card test-card solovay mb-2">
+                                    <div class="card-body p-2">
+                                        <strong>Solovay-Strassen</strong>
+                                        <div class="small text-muted">Probabiliste — Fiabilité ↑ avec k</div>
+                                    </div>
+                                </div>
+                                <div class="card test-card miller mb-2">
+                                    <div class="card-body p-2">
+                                        <strong>Miller-Rabin</strong>
+                                        <div class="small text-muted">Rapide — Très utilisé</div>
+                                    </div>
+                                </div>
+                                <div class="card test-card fast">
+                                    <div class="card-body p-2">
+                                        <strong>Fermat</strong>
+                                        <div class="small text-muted">Très simple — Faille: Carmichael</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Astuce</h6>
+                        </div>
+                        <div class="card-body">
+                            <small>Après le test, consultez le graphique pour comparer les temps d'exécution et la section Résultats pour le verdict détaillé.</small>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            
+            <main class="col-lg-8">
+                
+                <div class="card canvas-card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-chart-line"></i> Performance (ms)</h5>
+                        <div class="small text-muted">Mesure des temps d'exécution</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrap">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="resultsSection" class="results-card" style="display: none;">
+                    <div class="card">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-clipboard-check"></i> Résultats</h5>
+                            <div class="small text-muted" id="resultSummarySmall"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6>Informations sur le nombre</h6>
+                                    <div id="numberInfo"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Analyse des résultats</h6>
+                                    <div id="summaryInfo"></div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h6 class="mb-3">Tests individuels</h6>
+                            <div id="testResults" class="row g-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    
+    <footer class="mt-5 py-3 bg-light">
+        <div class="container text-center">
+            <p class="mb-0">Projet Mini 1 - Tests de Primalité</p>
+        </div>
+    </footer>
+
+    
+    <script>
+  
+    let performanceChart = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initPerformanceChart();
+
+        document.getElementById('testButton').addEventListener('click', testSingleNumber);
+        document.getElementById('numberInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') testSingleNumber();
+        });
+    });
+
+    function initPerformanceChart() {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        performanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Solovay-Strassen', 'Miller-Rabin', 'Fermat'],
+                datasets: [{
+                    label: "Temps d'exécution (ms)",
+                    data: [0, 0, 0],
+                    backgroundColor: [
+                        'rgba(255, 107, 107, 0.9)',
+                        'rgba(78, 205, 196, 0.9)',
+                        'rgba(69, 183, 209, 0.9)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 107, 107)',
+                        'rgb(78, 205, 196)',
+                        'rgb(69, 183, 209)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barThickness: 36
+                }]
+            },
+            options: {
+    responsive: true,
+    animation: {
+        duration: 800,
+        easing: 'easeOutQuart'
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            grid: {
+                color: 'rgba(0,0,0,0.05)',
+                drawBorder: false
+            },
+            ticks: {
+                color: '#374151'
+            },
+            title: {
+                display: true,
+                text: 'Temps (ms)',
+                color: '#374151',
+                font: { weight: 'bold' }
+            }
+        },
+        x: {
+            grid: { display: false },
+            ticks: { color: '#374151' }
+        }
+    },
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: '#111827',
+            titleColor: '#fff',
+            bodyColor: '#e5e7eb',
+            borderColor: '#6366f1',
+            borderWidth: 1,
+            padding: 10
+        }
+    }
+}
+        });
+    }
+
+    function updatePerformanceChart(data) {
+        if (!performanceChart) return;
+        const arr = [0, 0, 0];
+        data.forEach(item => {
+            const idx = getTestIndex(item.test);
+            if (idx !== -1) arr[idx] = Number(item.time_ms) || 0;
+        });
+        performanceChart.data.datasets[0].data = arr;
+        performanceChart.update();
+    }
+
+    function getTestIndex(testName) {
+        const testMap = {
+            'Solovay-Strassen': 0,
+            'Miller-Rabin': 1,
+            'Fermat': 2
+        };
+        return testMap[testName] !== undefined ? testMap[testName] : -1;
+    }
+
+    
+    function isValidIntegerString(s) {
+        return /^\s*\+?\d+\s*$/.test(s);
+    }
+
+    function showError(msg) {
+        alert(msg);
+    }
+
+    
+    function gcd(a, b) {
+        a = BigInt(a);
+        b = BigInt(b);
+        while (b !== 0n) {
+            const t = a % b;
+            a = b;
+            b = t;
+        }
+        return a < 0n ? -a : a;
+    }
+
+    
+    function modPow(base, exp, mod) {
+        base = (BigInt(base) % BigInt(mod) + BigInt(mod)) % BigInt(mod);
+        let result = 1n;
+        let e = BigInt(exp);
+        while (e > 0n) {
+            if (e & 1n) result = (result * base) % mod;
+            e >>= 1n;
+            base = (base * base) % mod;
+        }
+        return result;
+    }
+
+    
+    function millerRabin(n, k) {
+        n = BigInt(n);
+        if (n < 2n) return false;
+        const smallPrimes = [2n,3n,5n,7n,11n,13n,17n,19n,23n,29n,31n];
+        for (const p of smallPrimes) {
+            if (n === p) return true;
+            if (n % p === 0n) return false;
+        }
+
+        
+        let d = n - 1n;
+        let s = 0n;
+        while (d % 2n === 0n) { d /= 2n; s++; }
+
+        const bases64 = [2n,325n,9375n,28178n,450775n,9780504n,1795265022n];
+        const bases = [];
+        if (n < 341550071728321n) {
+            
+            bases.push(2n,3n,5n,7n,11n);
+        } else {
+            for (const a of bases64) if (a % n !== 0n) bases.push(a % n);
+        }
+
+        
+        if (bases.length === 0) {
+            for (let i = 0; i < Math.max(3, k); i++) bases.push(BigInt(2 + i));
+        }
+
+        for (const a of bases) {
+            let x = modPow(a, d, n);
+            if (x === 1n || x === n - 1n) continue;
+            let composite = true;
+            for (let r = 1n; r < s; r++) {
+                const xx = (x * x) % n;
+                if (xx === n - 1n) { composite = false; break; }
+                x = xx;
+            }
+            if (composite) return false;
+        }
+        return true;
+    }
+
+    
+    function jacobiSymbol(a, n) {
+        a = BigInt(a);
+        n = BigInt(n);
+        if (n <= 0n || n % 2n === 0n) return 0n;
+        a = (a % n + n) % n;
+        let t = 1n;
+        while (a !== 0n) {
+            while (a % 2n === 0n) {
+                a /= 2n;
+                const r = n % 8n;
+                if (r === 3n || r === 5n) t = -t;
+            }
+            
+            [a, n] = [n, a];
+            if (a % 4n === 3n && n % 4n === 3n) t = -t;
+            a %= n;
+        }
+        return n === 1n ? t : 0n;
+    }
+
+    function solovayStrassen(n, k) {
+        n = BigInt(n);
+        if (n < 2n) return false;
+        if (n === 2n || n === 3n) return true;
+        if (n % 2n === 0n) return false;
+
+        for (let i = 0; i < k; i++) {
+            
+            const small = [2n,3n,5n,7n,11n,13n,17n,19n,23n];
+            const a = small[i % small.length];
+            if (a >= n) continue;
+
+            if (gcd(a, n) > 1n) return false;
+            const x = modPow(a, (n - 1n) / 2n, n);
+            let j = jacobiSymbol(a, n);
+            if (j === -1n) j = n - 1n;
+            else j = j % n;
+            if (x !== j) return false;
+        }
+        return true;
+    }
+
+    
+    function fermatTest(n, k) {
+        n = BigInt(n);
+        if (n < 2n) return false;
+        if (n === 2n || n === 3n) return true;
+        if (n % 2n === 0n) return false;
+
+        const bases = [2n, 3n, 5n, 7n, 11n, 13n, 17n];
+
+        for (let i = 0; i < k; i++) {
+            const a = bases[i % bases.length];
+            if (a >= n) continue;
+
+            if (gcd(a, n) !== 1n) return false;
+            if (modPow(a, n - 1n, n) !== 1n) return false;
+        }
+        return true; 
+    }
+
+    
+    function setIterations(k) {
+        document.getElementById('iterationsInput').value = k;
+    }
+
+    
+    async function testSingleNumber() {
+        const raw = document.getElementById('numberInput').value;
+        const testType = document.getElementById('testSelect').value;
+        const k = parseInt(document.getElementById('iterationsInput').value) || 10;
+
+        if (!raw || !isValidIntegerString(raw)) {
+            showError('Veuillez entrer un entier positif valide (ex: 7919)');
+            return;
+        }
+
+        let n;
+        try { n = BigInt(raw.trim()); }
+        catch (e) { showError('Nombre trop grand ou format invalide'); return; }
+
+        if (n < 0n) { showError('Veuillez entrer un entier positif'); return; }
+        if (k < 1 || k > 100) { showError("Le nombre d'itérations doit être entre 1 et 100"); return; }
+
+        showLoading(true);
+        const tests = [];
+
+        function runTest(name, fn, probPercent) {
+            const t0 = performance.now();
+            const result = fn(n, k);
+            const t1 = performance.now();
+            const time_ms = Number((t1 - t0).toFixed(3));
+            tests.push({ test: name, is_prime: !!result, probability: Number(probPercent.toFixed(6)), time_ms });
+        }
+
+        
+        if (testType === 'all' || testType === 'solovay') {
+            runTest('Solovay-Strassen', () => solovayStrassen(n, k), (1 - Math.pow(2, -k)) * 100);
+        }
+        if (testType === 'all' || testType === 'miller') {
+            runTest('Miller-Rabin', () => millerRabin(n, k), (1 - Math.pow(4, -k)) * 100);
+        }
+        if (testType === 'all' || testType === 'fast') {
+            runTest('Fermat', () => fermatTest(n, k), (1 - Math.pow(2, -k)) * 100);
+        }
+
+        
+        const info = {
+            display_number: n.toString(),
+            bit_length: n.toString(2).length,
+            hex: '0x' + n.toString(16),
+            is_even: (n % 2n === 0n),
+            is_power_of_two: (n & (n - 1n)) === 0n,
+            timestamp: new Date().toLocaleString()
+        };
+
+        displayResults({ info, results: tests });
+        updatePerformanceChart(tests);
+        showLoading(false);
+    }
+
+    function displayResults(data) {
+        document.getElementById('resultsSection').style.display = 'block';
+
+        const info = data.info;
+        document.getElementById('numberInfo').innerHTML = `
+            <div class="number-display mb-2">${info.display_number}</div>
+            <div>
+                <span class="info-badge"><i class="fas fa-binary"></i> ${info.bit_length} bits</span>
+                <span class="info-badge"><i class="fas fa-hashtag"></i> ${info.hex}</span>
+                <span class="info-badge"><i class="fas fa-${info.is_even ? 'check' : 'times'}"></i> ${info.is_even ? 'Pair' : 'Impair'}</span>
+                ${info.is_power_of_two ? '<span class="info-badge"><i class="fas fa-bolt"></i> Puissance de 2</span>' : ''}
+            </div>
+            <div class="mt-2"><small>Testé le: ${info.timestamp}</small></div>
+        `;
+
+        const primeTests = data.results.filter(r => r.is_prime).length;
+        const totalTests = data.results.length;
+        const compositeTests = totalTests - primeTests;
+
+        let summaryHTML = '';
+        if (totalTests === 0) summaryHTML = '<div class="alert alert-secondary">Aucun test exécuté</div>';
+        else if (primeTests === 0) summaryHTML = `<div class="alert alert-danger"><strong>Consensus :</strong> Composite (${totalTests}/${totalTests})</div>`;
+        else if (primeTests === totalTests) summaryHTML = `<div class="alert alert-success"><strong>Consensus :</strong> Premier (${totalTests}/${totalTests})</div>`;
+        else summaryHTML = `<div class="alert alert-warning">Tests en désaccord : ${primeTests} Premier / ${compositeTests} Composite</div>`;
+
+        document.getElementById('summaryInfo').innerHTML = summaryHTML;
+
+        const resultsContainer = document.getElementById('testResults');
+        resultsContainer.innerHTML = '';
+        data.results.forEach(result => {
+            const resultClass = result.is_prime ? 'result-prime' : 'result-composite';
+            const resultText = result.is_prime ? 'PREMIER' : 'COMPOSITE';
+            const probabilityWidth = Math.min(Math.max(result.probability, 0), 100) + '%';
+
+            resultsContainer.innerHTML += `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 test-card ${getTestClass(result.test)}">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-between align-items-center">
+                                <span><i class="fas ${getTestIcon(result.test)}"></i> ${result.test}</span>
+                             
+                            </h6>
+                            <div class="mb-2">
+                                <span class="${resultClass}">${resultText}</span>
+                                
+                            </div>
+                            <div class="probability-bar bg-light">
+                                <div class="probability-fill" style="width: ${probabilityWidth}"></div>
+                            </div>
+                            <div class="mt-2">
+                                <small><i class="fas fa-clock"></i> Temps: ${result.time_ms} ms</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function getTestClass(testName) {
+        const classMap = {
+            'Solovay-Strassen': 'solovay',
+            'Miller-Rabin': 'miller',
+            'Fermat': 'fast'
+        };
+        return classMap[testName] || '';
+    }
+
+    function getTestIcon(testName) {
+        const iconMap = {
+            'Solovay-Strassen': 'fa-atom',
+            'Miller-Rabin': 'fa-bolt',
+            'Fermat': 'fa-flask'
+        };
+        return iconMap[testName] || 'fa-question-circle';
+    }
+
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+    </script>
+</body>
+</html>
